@@ -1,12 +1,12 @@
 from django.urls import path, include
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView,)
+
 from .views import GenreViewSet
 
 router_v1 = DefaultRouter()
 router_v1.register('genres', GenreViewSet)
+
 #router_v1.register('group', GroupViewSet)
 #router_v1.register('follow', FollowViewSet, basename='follow')
 #router_v1.register(

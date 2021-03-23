@@ -2,6 +2,23 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
+
+class User(models.Model):
+    pass
+
+
+class Genre(models.Model):
+    pass
+
+
+class Category(models.Model):
+    pass
+
+
+class Title(models.Model):
+    pass
+
+
 class Review(models.Model):
     title = models.ForeignKey(
         Title,
@@ -56,14 +73,3 @@ class Comment(models.Model):
     class Meta:
         ordering = ("-pub_date",)
 
-
-class Genre(models.Model):
-    pass
-
-
-class Category(models.Model):
-    pass
-
-
-class Title(models.Model):
-    pass

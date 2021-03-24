@@ -11,7 +11,7 @@ class Genre(models.Model):
     )
 
     slug = models.SlugField(
-        verbose_name='Слаг', 
+        verbose_name='Слаг',
         unique=True,
         help_text=('Укажите адрес для нового жанра. Используйте только '
                    'латиницу, цифры, дефисы и знаки подчёркивания')
@@ -27,7 +27,7 @@ class Category(models.Model):
     )
 
     slug = models.SlugField(
-        verbose_name='Слаг', 
+        verbose_name='Слаг',
         unique=True,
         help_text=('Укажите адрес для новой категории. Используйте только '
                    'латиницу, цифры, дефисы и знаки подчёркивания')
@@ -37,18 +37,18 @@ class Category(models.Model):
 class Title(models.Model):
     name = models.CharField(
         verbose_name='Заголовок',
-        max_length=200,        
+        max_length=200,
         help_text='Напишите название произведения'
     )
     year = models.IntegerField(
-        verbose_name='Год создания',        
-        blank=True, null=True,
+        verbose_name='Год создания',
+        blank=True, 
         help_text='Укажите дату написания поста'
     )
-    description = models.TextField(  
-        verbose_name='Описание произведения', 
+    description = models.TextField(
+        verbose_name='Описание произведения',
         blank=True, null=True,
         help_text='Добавьте сюда описание произведения'
     )
-    genre = models.ManyToManyField(Genre, blank=True, null=True)
-    category = models.ManyToManyField(Category, blank=True, null=True)
+    genre = models.ManyToManyField(Genre, blank=True)
+    category = models.ManyToManyField(Category, blank=True)

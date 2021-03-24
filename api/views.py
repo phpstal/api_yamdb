@@ -33,3 +33,6 @@ class CategoryViewSet(mixins.DestroyModelMixin,
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()

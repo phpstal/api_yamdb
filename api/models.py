@@ -22,6 +22,7 @@ class Category(models.Model):
     name = models.CharField(
         verbose_name='Заголовок',
         max_length=200,
+        blank=True, null=True,
         help_text='Напишите название категории'
     )
 

@@ -2,17 +2,13 @@ from django.urls import path, include
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from .views import GenreViewSet, CategoryViewSet
+from .views import GenreViewSet, CategoryViewSet, TitleViewSet
 
 router_v1 = DefaultRouter()
 router_v1.register('genres', GenreViewSet)
 router_v1.register('categories', CategoryViewSet)
-#router_v1.register('follow', FollowViewSet, basename='follow')
-#router_v1.register(
-#    r'posts/(?P<post_id>\d+)/comments',
-#    CommentViewSet,
-#    basename='comments'
-#)
+router_v1.register('titles', TitleViewSet)
+
 API_V = 'v1/'
 
 urlpatterns = [

@@ -1,8 +1,8 @@
 from rest_framework import viewsets, filters, mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from .models import Genre, Category
-from .serializers import GenreSerializer, CategorySerializer
+from .models import Genre, Category, Title
+from .serializers import GenreSerializer, CategorySerializer, TitleSerializer
 from .permissions import IsAuthorOrReadOnly
 
 PERMISSION_CLASSES = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
@@ -28,3 +28,8 @@ class CategoryViewSet(mixins.DestroyModelMixin,
     filter_backends = [filters.SearchFilter]
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer

@@ -32,3 +32,23 @@ class Category(models.Model):
         help_text=('Укажите адрес для новой категории. Используйте только '
                    'латиницу, цифры, дефисы и знаки подчёркивания')
     )
+
+
+class Title(models.Model):
+    name = models.CharField(
+        verbose_name='Заголовок',
+        max_length=200,        
+        help_text='Напишите название произведения'
+    )
+    year = models.IntegerField(
+        verbose_name='Год создания',        
+        blank=True, null=True,
+        help_text='Укажите дату написания поста'
+    )
+    description = models.TextField(  
+        verbose_name='Описание произведения', 
+        blank=True, null=True,
+        help_text='Добавьте сюда описание произведения'
+    )
+    genre = models.ManyToManyField(Genre, blank=True, null=True)
+    category = models.ManyToManyField(Category, blank=True, null=True)

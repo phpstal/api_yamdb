@@ -13,10 +13,4 @@ API_V = 'v1/'
 
 urlpatterns = [
     path(API_V, include(router_v1.urls)),
-#    path(API_V + 'token/',
-#         TokenObtainPairView.as_view(),
-#         name='token_obtain_pair'),
-#    path(API_V + 'token/refresh/',
-#         TokenRefreshView.as_view(),
-#         name='token_refresh'),
 ]

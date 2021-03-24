@@ -43,12 +43,12 @@ class Title(models.Model):
     year = models.IntegerField(
         verbose_name='Год создания',
         blank=True, 
-        help_text='Укажите дату написания поста'
+        help_text='Укажите год создания'
     )
+    category = models.ManyToManyField(Category, blank=True)
+    genre = models.ManyToManyField(Genre, blank=True)
     description = models.TextField(
         verbose_name='Описание произведения',
         blank=True, null=True,
         help_text='Добавьте сюда описание произведения'
     )
-    genre = models.ManyToManyField(Genre, blank=True)
-    category = models.ManyToManyField(Category, blank=True)

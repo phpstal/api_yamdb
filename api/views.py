@@ -1,11 +1,12 @@
 from rest_framework import viewsets, filters, mixins
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
 from .models import Genre, Category, Title
 from .serializers import GenreSerializer, CategorySerializer, TitleSerializer
 from .permissions import IsAuthorOrReadOnly
 
-PERMISSION_CLASSES = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+#PERMISSION_CLASSES = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+PERMISSION_CLASSES = [AllowAny]
 
 
 class GenreViewSet(mixins.DestroyModelMixin,
@@ -33,3 +34,4 @@ class CategoryViewSet(mixins.DestroyModelMixin,
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+    permission_classes = PERMISSION_CLASSES

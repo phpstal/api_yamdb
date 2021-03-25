@@ -41,13 +41,12 @@ class GenreViewSet(mixins.DestroyModelMixin,
     lookup_field = 'slug'
 
 
-class CategoryViewSet(mixins.DestroyModelMixin,
-                      mixins.ListModelMixin,
+class CategoryViewSet(mixins.ListModelMixin,
+                      mixins.DestroyModelMixin,
                       mixins.CreateModelMixin,
                       viewsets.GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminUser]
     filter_backends = [filters.SearchFilter]
     search_fields = ('name', 'slug')
     lookup_field = 'slug'

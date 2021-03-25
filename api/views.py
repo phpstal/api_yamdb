@@ -16,14 +16,6 @@ class GenreViewSet(mixins.DestroyModelMixin,
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        
-        return Response(serializer.data, status=status.HTTP_401_UNAUTHORIZED, headers=headers)
-
 
 class CategoryViewSet(mixins.DestroyModelMixin,
                       mixins.ListModelMixin,

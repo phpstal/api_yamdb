@@ -43,12 +43,30 @@ class Title(models.Model):
     year = models.IntegerField(
         verbose_name='Год создания',
         blank=True, 
+        null=True,
         help_text='Укажите год создания'
     )
-    category = models.ManyToManyField(Category, blank=True)
-    genre = models.ManyToManyField(Genre, blank=True)
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        related_name='titles',
+        blank=True,
+        null=True,
+        db_index=False,
+    )
+    genre = models.ManyToManyField(
+        Genre,
+        related_name='titles',
+        blank=True,
+    )
     description = models.TextField(
         verbose_name='Описание произведения',
         blank=True, null=True,
         help_text='Добавьте сюда описание произведения'
     )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('id',)

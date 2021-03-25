@@ -1,6 +1,5 @@
-from rest_framework import viewsets, filters, mixins, status
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
+from rest_framework import viewsets, filters, mixins, serializers
+from django_filters import rest_framework, CharFilter, FilterSet
 
 from .models import Genre, Category, Title
 from .serializers import GenreSerializer, CategorySerializer, TitleSerializer
@@ -28,7 +27,22 @@ class CategoryViewSet(mixins.DestroyModelMixin,
     lookup_field = 'slug'
 
 
+class TitleFilter(FilterSet):
+    genre = CharFilter(field_name='genre__slug', 
+                       lookup_expr='icontains')
+    category = CharFilter(field_name='category__slug', 
+                          lookup_expr='icontains')
+    name = CharFilter(field_name='name', 
+                      lookup_expr='icontains')
+
+    class Meta:
+        model = Title
+        fields = ['year']
+
+
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    
+    permission_classes = []
+    filter_backends = [rest_framework.DjangoFilterBackend]
+    filterset_class = TitleFilter

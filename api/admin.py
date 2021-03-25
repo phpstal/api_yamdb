@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import YamdbUser
+from .models import YamdbUser, Comment, Review
 
 
 class YamdbUserAdmin(admin.ModelAdmin):
@@ -26,5 +26,17 @@ class YamdbUserAdmin(admin.ModelAdmin):
     list_filter = ('date_joined',)
     empty_value_display = '-пусто-'
 
-
 admin.site.register(YamdbUser, YamdbUserAdmin)
+
+
+class CommentsAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'text', 'author', 'pub_date', 'review')
+
+admin.site.register(Comment, CommentsAdmin)
+
+              
+class ReviewsAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'title', 'text', 'author', 'score', 'pub_date') 
+
+
+admin.site.register(Review, ReviewsAdmin)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import YamdbUser, Genre, Category, Title
+from .models import YamdbUser, Genre, Category, Title, Review, Comment
 
 
 class YamdbUserSerializer(serializers.ModelSerializer):
@@ -66,3 +66,26 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Title
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Review
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Comment
+

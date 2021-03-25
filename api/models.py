@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 ROLES_CHOICES = [
@@ -87,9 +88,53 @@ class Title(models.Model):
         blank=True, null=True,
         help_text='Добавьте сюда описание произведения'
     )
+    rating = models.SmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(10),
+        ],
+        blank=True,
+        null=True,
+    )
 
-    def __str__(self):
-        return self.name
 
-    class Meta:
-        ordering = ('id',)
+class Review(models.Model):
+    title = models.ForeignKey(Title,
+                              on_delete=models.CASCADE,
+                              related_name="reviews")
+    text = models.TextField()
+    author = models.ForeignKey(YamdbUser,
+                               on_delete=models.CASCADE,
+                               related_name="reviews")
+    score = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    pub_date = models.DateTimeField('Дата публикации',
+                                    auto_now_add=True)
+
+
+class Comment(models.Model):
+    review = models.ForeignKey(Review,
+                               on_delete=models.CASCADE,
+                               related_name="comments")
+    text = models.TextField()
+    author = models.ForeignKey(YamdbUser,
+                               on_delete=models.CASCADE,
+                               related_name="comments")
+    pub_date = models.DateTimeField('Дата публикации',
+                                    auto_now_add=True)
+
+
+#class Title(models.Model):
+
+#    name = models.CharField(max_length=140,
+#                            verbose_name="Название фильма")
+ #   year = models.IntegerField(
+ #       validators=[MinValueValidator(1984), MaxValueValidator(2030)],
+#        verbose_name="Год выпуска"
+#    )
+#    category = models.ForeignKey(
+#        Category, on_delete=models.SET_NULL,
+#        blank=True, null=True, related_name="category_title",
+#        verbose_name="Категория"
+#)

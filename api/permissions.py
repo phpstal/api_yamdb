@@ -1,4 +1,8 @@
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (IsAuthenticatedOrReadOnly, 
+                                        BasePermission,
+                                        SAFE_METHODS)
+
+from users.models import Role
 
 
 class IsAuthenticatedAuthorOrReadOnly(IsAuthenticatedOrReadOnly):
@@ -26,3 +30,15 @@ class IsAuthenticatedUser(permissions.BasePermission):
         return (
             status.HTTP_401_UNAUTHORIZED 
         )
+
+
+class IsAuthorOrAdminOrModerator(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+        elif request.method == 'POST':
+            return request.user.is_authenticated 
+        elif request.method in ('PUT', 'PATCH', 'DELETE'):
+            return (request.user.role in {Role.MODERATOR, Role.ADMIN} or 
+                    obj.author == request.user or 
+                    request.user.is_staff)

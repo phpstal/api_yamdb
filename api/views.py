@@ -4,11 +4,13 @@ from rest_framework.permissions import IsAdminUser
 from django_filters import rest_framework, CharFilter, FilterSet
 
 
-from .models import YamdbUser, Genre, Category, Title
+from .models import YamdbUser, Genre, Category, Title, Review
 from .serializers import (YamdbUserSerializer, 
                           GenreSerializer, 
                           CategorySerializer, 
-                          TitleSerializer)
+                          TitleSerializer,
+                          ReviewSerializer, 
+                          CommentSerializer)
 
 
 class YamdbUserViewSet(viewsets.ModelViewSet):
@@ -71,3 +73,25 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     filter_backends = [rest_framework.DjangoFilterBackend]
     filterset_class = TitleFilter
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = []
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """Create, get, update comments for reviews"""
+    serializer_class = CommentSerializer
+    permission_classes = []
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def get_queryset(self):
+        review = get_object_or_404(Review, id=self.kwargs['reviews_id'])
+        return review.comments.all()

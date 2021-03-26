@@ -31,7 +31,6 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
 
 class YamdbUserMeViewSet(YamdbUserViewSet):
     permission_classes = [IsAuthenticated]
-    lookup_field = 'username'
 
     def list(self, request, *args, **kwargs):
         id = self.request.user.pk
@@ -148,9 +147,8 @@ class Registration(APIView):
     permission_classes = [AllowAny]
     
     def ConfirmationCodeGenerate(self, email):
-        confirmation_code = hashlib.md5('{}{}'.format(
-                            email, settings.SECRET_KEY).encode(
-                            'utf-8')).hexdigest()
+        confirmation_code = hashlib.md5(
+            f'{email},{settings.SECRET_KEY}'.encode('utf-8')).hexdigest()
         return confirmation_code
 
 

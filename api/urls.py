@@ -1,7 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import (TokenObtainPairView, 
-                                            TokenRefreshView)
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (YamdbUsernameViewSet, 
                     YamdbUserViewSet, 
@@ -39,12 +38,17 @@ YamdbUsernameMethods = {
     'delete': 'destroy'
 }
 
+YamdbUserMeMethods = {
+    'get': 'list',
+    'patch': 'update'
+}
+
 urlpatterns = [
     path('v1/auth/', include(auth_urls)),
     path(
         'v1/users/me/',
-        YamdbUserMeViewSet.as_view(YamdbUsernameMethods),
-        name='my_user'
+        YamdbUserMeViewSet.as_view(YamdbUserMeMethods),
+        name='me'
     ),
     path(
         'v1/users/<str:username>/',

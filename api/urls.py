@@ -33,16 +33,12 @@ auth_urls = [
     path('email/', GetConfirmationCode.as_view(), name='confirmation_code')
 ]
 
-YamdbUsernameMethods = {
-    'get': 'list',
-    'patch': 'update',
-    'delete': 'destroy'
-}
-
 YamdbUserMeMethods = {
     'get': 'list',
     'patch': 'update',
 }
+YamdbUsernameMethods = YamdbUserMeMethods.copy()
+YamdbUsernameMethods['delete'] = 'destroy'
 
 urlpatterns = [
     path('v1/auth/', include(auth_urls)),

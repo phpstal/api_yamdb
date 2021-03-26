@@ -31,7 +31,6 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
 
 class YamdbUserMeViewSet(YamdbUserViewSet):
     permission_classes = [IsAuthenticated]
-    lookup_field = 'pk'
     
     def list(self, request, *args, **kwargs):
         id = self.request.user.pk

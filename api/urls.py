@@ -39,11 +39,16 @@ YamdbUsernameMethods = {
     'delete': 'destroy'
 }
 
+YamdbUserMeMethods = {
+    'get': 'list',
+    'patch': 'update',
+}
+
 urlpatterns = [
     path('v1/auth/', include(auth_urls)),
     path(
         'v1/users/me/',
-        YamdbUserMeViewSet.as_view(YamdbUsernameMethods),
+        YamdbUserMeViewSet.as_view(YamdbUserMeMethods),
         name='my_user'
     ),
     path(

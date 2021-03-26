@@ -6,27 +6,37 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 #User = get_user_model()
 
-ROLES_CHOICES = [
-    ('user', 'Пользователь'),
-    ('moderator','Модератор'),
-    ('admin', 'Администратор'),
-]
+class ROLES_CHOICES(models.TextChoices):
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
 
 class YamdbUser(AbstractUser):
     email = models.EmailField(verbose_name='E-Mail', unique=True)
     bio = models.TextField(verbose_name='О себе', blank=True)
     code = models.TextField(verbose_name='Код', blank=True)
     role = models.CharField(
-        default='user',
+        default=ROLES_CHOICES.USER,
         max_length=10,
-        verbose_name='Роль',
-        choices=ROLES_CHOICES
+        choices=ROLES_CHOICES.choices
     )
     user_permissions = None
     groups = None
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
+
+    @property
+    def is_admin(self):
+        return (
+            self.role == ROLES_CHOICES.ADMIN
+            or self.is_superuser
+            or self.is_staff
+        )
+
+    @property
+    def is_moderator(self):
+        return self.role == ROLES_CHOICES.MODERATOR
 
 
 class Genre(models.Model):

@@ -51,7 +51,6 @@ class CategoryField(serializers.SlugRelatedField):
     def to_representation(self, value):
         return CategorySerializer(value).data
 
-
 class TitleSerializer(serializers.ModelSerializer):
     genre = GenreField(
         many=True,
@@ -62,7 +61,8 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Category.objects.all()
     )
-    
+    rating = serializers.IntegerField(read_only=True, required=False)
+
     class Meta:
         fields = '__all__'
         model = Title

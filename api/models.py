@@ -91,14 +91,7 @@ class Title(models.Model):
         blank=True, null=True,
         help_text='Добавьте сюда описание произведения'
     )
-    rating = models.SmallIntegerField(
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(10),
-        ],
-        blank=True,
-        null=True,
-    )
+    
 
 
 class Review(models.Model):

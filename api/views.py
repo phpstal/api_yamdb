@@ -1,10 +1,11 @@
+from django.db.models import Avg
 from rest_framework import viewsets, filters, mixins, serializers
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from django_filters import rest_framework, CharFilter, FilterSet
 from rest_framework.pagination import PageNumberPagination
 
-from .permissions import IsAdmin, IsModerator, IsOwner
+from .permissions import IsAdmin, IsModerator, IsOwner, CustomPermission
 from .models import YamdbUser, Genre, Category, Title, Review, Comment
 from .serializers import (YamdbUserSerializer, 
                           GenreSerializer, 
@@ -70,16 +71,17 @@ class TitleFilter(FilterSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')).order_by('rating')
     serializer_class = TitleSerializer
+    permission_classes = []
     filter_backends = [rest_framework.DjangoFilterBackend]
     filterset_class = TitleFilter
-
 
 class ReviewViewSet(viewsets.ModelViewSet):
     """Класс взаимодействия с моделью Review. """
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, IsOwner, IsAdmin, IsModerator)
+    permission_classes = (CustomPermission,)
     def get_queryset(self):
         """Получение списка отзывов. """
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
@@ -93,7 +95,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes =(IsAuthenticatedOrReadOnly, IsOwner, IsAdmin, IsModerator)
+    permission_classes = (CustomPermission,)
 
     def get_queryset(self):
         """Получение списка комментариев к отзыву. """

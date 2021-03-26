@@ -2,73 +2,6 @@ from rest_framework import serializers, exceptions
 
 from .models import YamdbUser, Genre, Category, Title, Review, Comment
 
-class YamdbUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = (
-            'first_name',
-            'last_name',
-            'username',
-            'bio',
-            'email',
-            'role'
-        )
-        model = YamdbUser
-
-
-class GenreSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Genre
-        fields = ('name', 'slug')
-
-
-class CategorySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Category
-        fields = ('name', 'slug')
-
-
-class GenreField(serializers.SlugRelatedField):
-    def to_internal_value(self, data):
-        try:
-            return self.get_queryset().get(**{self.slug_field: data})
-        except (TypeError, ValueError):
-            self.fail('invalid')
-
-    def to_representation(self, value):
-        return GenreSerializer(value).data
-
-
-class CategoryField(serializers.SlugRelatedField):
-    def to_internal_value(self, data):
-        try:
-            return self.get_queryset().get(**{self.slug_field: data})
-        except (TypeError, ValueError):
-            self.fail('invalid')
-
-    def to_representation(self, value):
-        return CategorySerializer(value).data
-
-
-class TitleSerializer(serializers.ModelSerializer):
-    genre = GenreField(
-        many=True,
-        slug_field='slug',
-        queryset=Genre.objects.all()
-    )
-    category = CategoryField(
-        slug_field='slug',
-        queryset=Category.objects.all()
-    )
-
-    class Meta:
-        fields = '__all__'
-        model = Title
-
-
-
-
 
 class YamdbUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -119,6 +52,7 @@ class CategoryField(serializers.SlugRelatedField):
     def to_representation(self, value):
         return CategorySerializer(value).data
 
+
 class TitleSerializer(serializers.ModelSerializer):
     genre = GenreField(
         many=True,
@@ -137,7 +71,10 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date',)
@@ -163,22 +100,8 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'author', 'pub_date',)
         model = Comment
 
+
 class ConfirmationCodeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('email',)
-        model = YamdbUser
-
-
-class GetTokenSerializer(serializers.ModelSerializer):
-    confirmation_code = serializers.StringRelatedField(many=False)
-
-    def validate_email(self, value):
-        if not YamdbUser.objects.filter(email=value).exists():
-            return serializers.ValidationError('You cant follow yourself')
-        return value
-    
-    class Meta:
-        fields = ('email', 'confirmation_code',)
-        read_only_fields = ['email']
-        extra_kwargs = {'confirmation_code': {'required': True}}
         model = YamdbUser

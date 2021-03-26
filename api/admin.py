@@ -20,11 +20,12 @@ class YamdbUserAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
             'fields': ('last_login', 'date_joined'),
         })
-    )    
+    )
     list_display = ('email', 'username', 'is_staff', 'last_name', 'first_name')
     search_fields = ('text',)
     list_filter = ('date_joined',)
     empty_value_display = '-пусто-'
+
 
 admin.site.register(YamdbUser, YamdbUserAdmin)
 
@@ -32,11 +33,12 @@ admin.site.register(YamdbUser, YamdbUserAdmin)
 class CommentsAdmin(admin.ModelAdmin):
     list_display = ('pk', 'text', 'author', 'pub_date', 'review')
 
+
 admin.site.register(Comment, CommentsAdmin)
 
-              
+
 class ReviewsAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'title', 'text', 'author', 'score', 'pub_date') 
+    list_display = ('pk', 'title', 'text', 'author', 'score', 'pub_date')
 
 
 admin.site.register(Review, ReviewsAdmin)

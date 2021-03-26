@@ -2,13 +2,13 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import (YamdbUsernameViewSet, 
-                    YamdbUserViewSet, 
+from .views import (YamdbUsernameViewSet,
+                    YamdbUserViewSet,
                     YamdbUserMeViewSet,
                     GetToken,
                     GetConfirmationCode,
-                    GenreViewSet, 
-                    CategoryViewSet, 
+                    GenreViewSet,
+                    CategoryViewSet,
                     TitleViewSet,
                     ReviewViewSet,
                     CommentViewSet)
@@ -32,11 +32,12 @@ auth_urls = [
     path('email/', GetConfirmationCode.as_view(), name='confirmation_code')
 ]
 
-YamdbUsernameMethods = {
+YamdbUserMeMethods = {
     'get': 'list',
     'patch': 'update',
-    'delete': 'destroy'
 }
+YamdbUsernameMethods = YamdbUserMeMethods.copy()
+YamdbUsernameMethods['delete'] = 'destroy'
 
 YamdbUserMeMethods = {
     'get': 'list',
@@ -48,7 +49,7 @@ urlpatterns = [
     path(
         'v1/users/me/',
         YamdbUserMeViewSet.as_view(YamdbUserMeMethods),
-        name='me'
+        name='my_user'
     ),
     path(
         'v1/users/<str:username>/',

@@ -235,7 +235,7 @@ class Test01UserAPI:
             'с токеном авторизации возвращается статус 200'
         )
         #client_user = auth_client(user)
-        response = user_client.patch(f'/api/v1/users/{admin.username}/')
+        response = user_client.get(f'/api/v1/users/{admin.username}/')
         assert response.status_code == 200, (
             'Проверьте, что при PATCH запросе `/api/v1/users/{username}/` можно изменить роль пользователя'
         )

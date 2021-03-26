@@ -31,11 +31,13 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
 
 class YamdbUserMeViewSet(YamdbUserViewSet):
     permission_classes = [IsAuthenticated]
-    pagination_class = None
+    lookup_field = 'username'
 
-    def get_queryset(self):
+    def list(self, request, *args, **kwargs):
         id = self.request.user.pk
-        return YamdbUser.objects.filter(id=id)
+        obj = get_object_or_404(YamdbUser, id=id)
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
 
     def update(self, request):
         user = self.request.user
@@ -46,11 +48,11 @@ class YamdbUserMeViewSet(YamdbUserViewSet):
 
 
 class YamdbUsernameViewSet(YamdbUserViewSet):
-    pagination_class = None
-
-    def get_queryset(self):
+    def list(self, request, *args, **kwargs):
         username = self.kwargs['username']
-        return YamdbUser.objects.filter(username=username)
+        obj = get_object_or_404(YamdbUser, username=username)
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
 
     def update(self, request, username):
         user = get_object_or_404(YamdbUser, username=username)

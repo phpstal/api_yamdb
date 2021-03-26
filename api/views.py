@@ -31,7 +31,6 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
 
 class YamdbUserMeViewSet(YamdbUserViewSet):
     permission_classes = [IsAuthenticated]
-    pagination_class = None
 
     def get_queryset(self):
         id = self.request.user.pk

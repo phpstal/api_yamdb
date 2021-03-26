@@ -27,7 +27,7 @@ class YamdbUser(AbstractUser):
     groups = None
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', ]
+    REQUIRED_FIELDS = ('username',)
 
     @property
     def is_admin(self):

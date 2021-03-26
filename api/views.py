@@ -39,8 +39,8 @@ class YamdbUserMeViewSet(YamdbUserViewSet):
     def update(self, request):
         user = self.request.user
         serializer = self.get_serializer(
-            user, 
-            data=request.data, 
+            user,
+            data=request.data,
             partial=True
         )
         serializer.is_valid(raise_exception=True)
@@ -149,9 +149,9 @@ class Registration(APIView):
     permission_classes = [AllowAny]
 
     def ConfirmationCodeGenerate(self, email):
-        confirmation_code = hashlib.md5('{}{}'.format(
-                            email, settings.SECRET_KEY).encode(
-                            'utf-8')).hexdigest()
+        confirmation_code = hashlib.md5(
+            f'{email}{settings.SECRET_KEY}'.encode('utf-8')
+        ).hexdigest()
         return confirmation_code
 
 

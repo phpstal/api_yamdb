@@ -41,6 +41,9 @@ class YamdbUser(AbstractUser):
     def is_moderator(self):
         return self.role == ROLES_CHOICES.MODERATOR
 
+    class Meta:
+        ordering = ['id']
+
 
 class Genre(models.Model):
     name = models.CharField(
@@ -57,6 +60,8 @@ class Genre(models.Model):
                    'латиницу, цифры, дефисы и знаки подчёркивания')
     )
 
+    class Meta:
+        ordering = ['id']
 
 class Category(models.Model):
     name = models.CharField(
@@ -72,6 +77,9 @@ class Category(models.Model):
         help_text=('Укажите адрес для новой категории. Используйте только '
                    'латиницу, цифры, дефисы и знаки подчёркивания')
     )
+    
+    class Meta:
+        ordering = ['id']
 
 
 class Title(models.Model):

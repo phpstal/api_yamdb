@@ -14,7 +14,7 @@ class YamdbUserAdmin(admin.ModelAdmin):
         }),
         ('Права доступа', {
             'classes': ('wide',),
-            'fields': ('role', 'is_active', 'is_superuser'),
+            'fields': ('role', 'is_active', 'is_staff', 'is_superuser'),
         }),
         ('Важные даты', {
             'classes': ('collapse',),

@@ -21,7 +21,7 @@ class YamdbUserAdmin(admin.ModelAdmin):
             'fields': ('last_login', 'date_joined'),
         })
     )    
-    list_display = ('email', 'username', 'last_name', 'first_name')
+    list_display = ('email', 'username', 'is_staff', 'last_name', 'first_name')
     search_fields = ('text',)
     list_filter = ('date_joined',)
     empty_value_display = '-пусто-'

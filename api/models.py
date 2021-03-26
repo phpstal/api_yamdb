@@ -12,6 +12,12 @@ class YamdbUser(AbstractUser):
     email = models.EmailField(verbose_name='E-Mail', unique=True)
     bio = models.TextField(verbose_name='О себе', blank=True)
     code = models.TextField(verbose_name='Код', blank=True)
+    username = models.CharField(
+        max_length=70,
+        verbose_name='Имя пользователя',
+        blank=True,
+        unique=True,
+    )
     role = models.CharField(
         default=ROLES_CHOICES.USER,
         max_length=10,

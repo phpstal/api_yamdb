@@ -1,32 +1,39 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-#from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
-#User = get_user_model()
-
-ROLES_CHOICES = [
-    ('user', 'Пользователь'),
-    ('moderator','Модератор'),
-    ('admin', 'Администратор'),
-]
+class ROLES_CHOICES(models.TextChoices):
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
 
 class YamdbUser(AbstractUser):
     email = models.EmailField(verbose_name='E-Mail', unique=True)
     bio = models.TextField(verbose_name='О себе', blank=True)
     code = models.TextField(verbose_name='Код', blank=True)
     role = models.CharField(
-        default='user',
+        default=ROLES_CHOICES.USER,
         max_length=10,
-        verbose_name='Роль',
-        choices=ROLES_CHOICES
+        choices=ROLES_CHOICES.choices
     )
     user_permissions = None
     groups = None
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
+
+    @property
+    def is_admin(self):
+        return (
+            self.role == ROLES_CHOICES.ADMIN
+            or self.is_superuser
+            or self.is_staff
+        )
+
+    @property
+    def is_moderator(self):
+        return self.role == ROLES_CHOICES.MODERATOR
 
 
 class Genre(models.Model):
@@ -91,53 +98,55 @@ class Title(models.Model):
         blank=True, null=True,
         help_text='Добавьте сюда описание произведения'
     )
-    rating = models.SmallIntegerField(
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(10),
-        ],
-        blank=True,
-        null=True,
-    )
 
 
 class Review(models.Model):
-    title = models.ForeignKey(Title,
-                              on_delete=models.CASCADE,
-                              related_name="reviews")
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
     text = models.TextField()
-    author = models.ForeignKey(YamdbUser,
-                               on_delete=models.CASCADE,
-                               related_name="reviews")
+    author = models.ForeignKey(
+        YamdbUser,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
     score = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
-    pub_date = models.DateTimeField('Дата публикации',
-                                    auto_now_add=True)
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True
+        )
+
+    class Meta:
+        ordering = ['-pub_date']
+        unique_together = ['title', 'author']
+
+    def __str__(self):
+        return str(self.author) 
 
 
 class Comment(models.Model):
-    review = models.ForeignKey(Review,
-                               on_delete=models.CASCADE,
-                               related_name="comments")
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
     text = models.TextField()
-    author = models.ForeignKey(YamdbUser,
-                               on_delete=models.CASCADE,
-                               related_name="comments")
-    pub_date = models.DateTimeField('Дата публикации',
-                                    auto_now_add=True)
+    author = models.ForeignKey(
+        YamdbUser,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True
+    )
 
+    class Meta:
+        ordering = ['-pub_date']
 
-#class Title(models.Model):
-
-#    name = models.CharField(max_length=140,
-#                            verbose_name="Название фильма")
- #   year = models.IntegerField(
- #       validators=[MinValueValidator(1984), MaxValueValidator(2030)],
-#        verbose_name="Год выпуска"
-#    )
-#    category = models.ForeignKey(
-#        Category, on_delete=models.SET_NULL,
-#        blank=True, null=True, related_name="category_title",
-#        verbose_name="Категория"
-#)
+    def __str__(self):
+        return str(self.author)

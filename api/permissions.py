@@ -1,44 +1,38 @@
-from rest_framework.permissions import (IsAuthenticatedOrReadOnly, 
-                                        BasePermission,
+from rest_framework.permissions import (BasePermission,
                                         SAFE_METHODS)
 
-#from users.models import Role
+
+class IsAdmin(BasePermission):
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_admin
+
+    def has_object_permission(self, request, view, obj):
+        return request.user.is_authenticated and request.user.is_admin
 
 
-class IsAuthenticatedAuthorOrReadOnly(IsAuthenticatedOrReadOnly):
+class IsAuthor(BasePermission):
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+
     def has_object_permission(self, request, view, obj):
         return obj.author == request.user
 
-from rest_framework import permissions, status
 
+class IsModerator(BasePermission):
 
-class IsAuthorOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return (
-            request.method in permissions.SAFE_METHODS
-            or obj.author == request.user
-        )
-
-
-class IsSuperuserPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_superuser
+        return request.user.is_authenticated and request.user.is_moderator
 
-
-class IsAuthenticatedUser(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return (
-            status.HTTP_401_UNAUTHORIZED 
-        )
+        return request.user.is_authenticated and request.user.is_moderator
 
 
-#class IsAuthorOrAdminOrModerator(BasePermission):
-#    def has_object_permission(self, request, view, obj):
-#        if request.method in SAFE_METHODS:
-#            return True
-#        elif request.method == 'POST':
-#            return request.user.is_authenticated 
-#        elif request.method in ('PUT', 'PATCH', 'DELETE'):
-#            return (request.user.role in {Role.MODERATOR, Role.ADMIN} or 
-#                    obj.author == request.user or 
-#                    request.user.is_staff)
+class IsReadOnly(BasePermission):
+
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+
+    def has_object_permission(self, request, view, obj):
+        return request.method in SAFE_METHODS

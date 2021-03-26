@@ -1,10 +1,12 @@
+from django.db.models import Avg
 from rest_framework import viewsets, filters, mixins, serializers
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.pagination import PageNumberPagination
 from django_filters import rest_framework, CharFilter, FilterSet
 
-from .permissions import IsAuthorOrReadOnly
-from .models import YamdbUser, Genre, Category, Title, Review
+from .permissions import IsAdmin, IsAuthor, IsModerator, IsReadOnly
+from .models import YamdbUser, Genre, Category, Title, Review, Comment
 from .serializers import (YamdbUserSerializer, 
                           GenreSerializer, 
                           CategorySerializer, 
@@ -16,8 +18,8 @@ from .serializers import (YamdbUserSerializer,
 class YamdbUserViewSet(viewsets.ModelViewSet):
     queryset = YamdbUser.objects.all()
     serializer_class = YamdbUserSerializer
-    permission_classes = [IsAdminUser]
-    filterset_fields = ['email']
+    permission_classes = (IsAdminUser,)
+    filterset_fields = ('email',)
 
 
 class YamdbUsernameViewSet(YamdbUserViewSet):
@@ -37,7 +39,7 @@ class GenreViewSet(mixins.DestroyModelMixin,
                    viewsets.GenericViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdmin | IsReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
@@ -50,6 +52,7 @@ class CategoryViewSet(mixins.ListModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
+    permission_classes = [IsAdmin | IsReadOnly]
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
@@ -68,29 +71,40 @@ class TitleFilter(FilterSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')).order_by('rating')
     serializer_class = TitleSerializer
+    permission_classes = [IsAdmin | IsReadOnly]
     filter_backends = [rest_framework.DjangoFilterBackend]
     filterset_class = TitleFilter
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
+    """Класс взаимодействия с моделью Review. """
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthorOrReadOnly]
+    permission_classes = [IsReadOnly | IsAdmin | IsModerator | IsAuthor]
+
+    def get_queryset(self):
+        """Получение списка отзывов. """
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        return title.reviews.all()
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        """Сохранение отзыва в бд. """
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    """Create, get, update comments for reviews"""
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthorOrReadOnly]
+    permission_classes = [IsReadOnly | IsAdmin | IsModerator | IsAuthor]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        """Сохранение комментария в бд. """
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)
 
     def get_queryset(self):
-        review = get_object_or_404(Review, id=self.kwargs['reviews_id'])
+        """Получение списка комментариев к отзыву. """
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
         return review.comments.all()

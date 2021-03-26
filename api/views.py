@@ -1,23 +1,21 @@
 import hashlib
 from django.conf import settings
 from django.db.models import Avg
-from rest_framework import viewsets, filters, mixins, serializers, status
+from rest_framework import viewsets, filters, mixins, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.serializers import Serializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from django_filters import rest_framework, CharFilter, FilterSet
 
 from .permissions import IsAdmin, IsAuthor, IsModerator, IsReadOnly
-from .models import YamdbUser, Genre, Category, Title, Review, Comment
-from .serializers import (YamdbUserSerializer, 
-                          GenreSerializer, 
-                          CategorySerializer, 
+from .models import YamdbUser, Genre, Category, Title, Review
+from .serializers import (YamdbUserSerializer,
+                          GenreSerializer,
+                          CategorySerializer,
                           TitleSerializer,
-                          ReviewSerializer, 
+                          ReviewSerializer,
                           CommentSerializer,
                           ConfirmationCodeSerializer)
 
@@ -31,7 +29,7 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
 
 class YamdbUserMeViewSet(YamdbUserViewSet):
     permission_classes = [IsAuthenticated]
-    
+
     def list(self, request, *args, **kwargs):
         id = self.request.user.pk
         obj = get_object_or_404(YamdbUser, id=id)
@@ -40,7 +38,11 @@ class YamdbUserMeViewSet(YamdbUserViewSet):
 
     def update(self, request):
         user = self.request.user
-        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer = self.get_serializer(
+            user, 
+            data=request.data, 
+            partial=True
+        )
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
@@ -91,11 +93,11 @@ class CategoryViewSet(mixins.ListModelMixin,
 
 
 class TitleFilter(FilterSet):
-    genre = CharFilter(field_name='genre__slug', 
+    genre = CharFilter(field_name='genre__slug',
                        lookup_expr='icontains')
-    category = CharFilter(field_name='category__slug', 
+    category = CharFilter(field_name='category__slug',
                           lookup_expr='icontains')
-    name = CharFilter(field_name='name', 
+    name = CharFilter(field_name='name',
                       lookup_expr='icontains')
 
     class Meta:
@@ -145,7 +147,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class Registration(APIView):
     permission_classes = [AllowAny]
-    
+
     def ConfirmationCodeGenerate(self, email):
         confirmation_code = hashlib.md5('{}{}'.format(
                             email, settings.SECRET_KEY).encode(
@@ -158,9 +160,12 @@ class GetConfirmationCode(Registration):
         serializer = ConfirmationCodeSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
-            serializer.save(is_active = False, username=email)
+            serializer.save(is_active=False, username=email)
             confirmation_code = self.ConfirmationCodeGenerate(email)
-            return Response(f'Код подтверждения {confirmation_code} для {email}', status=status.HTTP_200_OK)
+            return Response(
+                f'Код подтверждения {confirmation_code} для {email}',
+                status=status.HTTP_200_OK
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -178,7 +183,7 @@ class GetToken(Registration):
         if confirmation_code == confirmation_code_check:
             user = get_object_or_404(YamdbUser, email=email)
             token = self.get_tokens_for_user(user)
-            user.is_active=True
+            user.is_active = True
             user.save()
             return Response(token, status=status.HTTP_200_OK)
         return Response(

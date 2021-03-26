@@ -8,6 +8,7 @@ class ROLES_CHOICES(models.TextChoices):
     MODERATOR = 'moderator'
     ADMIN = 'admin'
 
+
 class YamdbUser(AbstractUser):
     email = models.EmailField(verbose_name='E-Mail', unique=True)
     bio = models.TextField(verbose_name='О себе', blank=True)
@@ -63,6 +64,7 @@ class Genre(models.Model):
     class Meta:
         ordering = ['id']
 
+
 class Category(models.Model):
     name = models.CharField(
         verbose_name='Заголовок',
@@ -77,7 +79,7 @@ class Category(models.Model):
         help_text=('Укажите адрес для новой категории. Используйте только '
                    'латиницу, цифры, дефисы и знаки подчёркивания')
     )
-    
+
     class Meta:
         ordering = ['id']
 
@@ -90,7 +92,7 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         verbose_name='Год создания',
-        blank=True, 
+        blank=True,
         null=True,
         help_text='Укажите год создания'
     )
@@ -132,14 +134,14 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True
-        )
+    )
 
     class Meta:
         ordering = ['-pub_date']
         unique_together = ['title', 'author']
 
     def __str__(self):
-        return str(self.author) 
+        return str(self.author)
 
 
 class Comment(models.Model):

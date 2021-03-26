@@ -52,6 +52,7 @@ class CategoryField(serializers.SlugRelatedField):
     def to_representation(self, value):
         return CategorySerializer(value).data
 
+
 class TitleSerializer(serializers.ModelSerializer):
     genre = GenreField(
         many=True,
@@ -70,7 +71,10 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    author = serializers.SlugRelatedField(
+        read_only=True, 
+        slug_field='username'
+    )
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date',)
@@ -110,7 +114,7 @@ class GetTokenSerializer(serializers.ModelSerializer):
         if not YamdbUser.objects.filter(email=value).exists():
             return serializers.ValidationError('You cant follow yourself')
         return value
-    
+
     class Meta:
         fields = ('email', 'confirmation_code',)
         read_only_fields = ['email']

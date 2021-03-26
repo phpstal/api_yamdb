@@ -98,53 +98,50 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='reviews',
-        verbose_name='Произведение'
+        related_name='reviews'
     )
+    text = models.TextField()
     author = models.ForeignKey(
         YamdbUser,
         on_delete=models.CASCADE,
-        related_name='reviews',
-        verbose_name='Автор'
+        related_name='reviews'
     )
-    text = models.TextField('Комментарий оценки')
-    score = models.PositiveSmallIntegerField(
-        'Оценка',
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(10)
-        ]
+    score = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
-    pub_date = models.DateTimeField('Дата и время', auto_now_add=True)
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True
+        )
 
     class Meta:
-        verbose_name = 'Отзыв с оценкой'
         ordering = ['-pub_date']
         unique_together = ['title', 'author']
 
     def __str__(self):
-        return str(self.author) + ': ' + self.text[:15]
+        return str(self.author) 
 
 
 class Comment(models.Model):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='comments',
-        verbose_name='Оценка'
+        related_name='comments'
     )
+    text = models.TextField()
     author = models.ForeignKey(
         YamdbUser,
         on_delete=models.CASCADE,
-        related_name='comments',
-        verbose_name='Автор'
+        related_name='comments'
     )
-    text = models.TextField('Текст комментария')
-    pub_date = models.DateTimeField('Дата и время', auto_now_add=True)
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True
+    )
+
 
     class Meta:
-        verbose_name = 'Комментарий к оценке'
         ordering = ['-pub_date']
 
     def __str__(self):
-        return str(self.author) + ': ' + self.text[:15]
+        return str(self.author)

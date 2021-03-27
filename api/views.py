@@ -50,6 +50,7 @@ class YamdbUserMeViewSet(YamdbUserViewSet):
 
 class YamdbUsernameViewSet(YamdbUserViewSet):
     permission_classes = (IsAdmin,)
+
     def list(self, request, *args, **kwargs):
         username = self.kwargs['username']
         obj = get_object_or_404(YamdbUser, username=username)

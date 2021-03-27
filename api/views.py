@@ -28,7 +28,7 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
 
 
 class YamdbUserMeViewSet(YamdbUserViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def list(self, request, *args, **kwargs):
         id = self.request.user.pk
@@ -49,6 +49,8 @@ class YamdbUserMeViewSet(YamdbUserViewSet):
 
 
 class YamdbUsernameViewSet(YamdbUserViewSet):
+    permission_classes = (IsAdmin,)
+
     def list(self, request, *args, **kwargs):
         username = self.kwargs['username']
         obj = get_object_or_404(YamdbUser, username=username)
@@ -74,7 +76,7 @@ class GenreViewSet(mixins.DestroyModelMixin,
                    viewsets.GenericViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [IsAdmin | IsReadOnly]
+    permission_classes = (IsAdmin | IsReadOnly,)
     filter_backends = [filters.SearchFilter]
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
@@ -87,7 +89,7 @@ class CategoryViewSet(mixins.ListModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = [IsAdmin | IsReadOnly]
+    permission_classes = (IsAdmin | IsReadOnly,)
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
@@ -109,7 +111,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')).order_by('rating')
     serializer_class = TitleSerializer
-    permission_classes = [IsAdmin | IsReadOnly]
+    permission_classes = (IsAdmin | IsReadOnly,)
     filter_backends = [rest_framework.DjangoFilterBackend]
     filterset_class = TitleFilter
 
@@ -117,7 +119,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Класс взаимодействия с моделью Review. """
     serializer_class = ReviewSerializer
-    permission_classes = [IsReadOnly | IsAdmin | IsModerator | IsAuthor]
+    permission_classes = (IsReadOnly | IsAdmin | IsModerator | IsAuthor,)
 
     def get_queryset(self):
         """Получение списка отзывов. """
@@ -132,7 +134,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsReadOnly | IsAdmin | IsModerator | IsAuthor]
+    permission_classes = (IsReadOnly | IsAdmin | IsModerator | IsAuthor,)
 
     def perform_create(self, serializer):
         """Сохранение комментария в бд. """
@@ -146,7 +148,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class Registration(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = (AllowAny,)
 
     def ConfirmationCodeGenerate(self, email):
         confirmation_code = hashlib.md5(

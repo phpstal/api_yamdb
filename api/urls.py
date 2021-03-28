@@ -36,12 +36,10 @@ YamdbUserMeMethods = {
     'get': 'list',
     'patch': 'update',
 }
-YamdbUsernameMethods = YamdbUserMeMethods.copy()
-YamdbUsernameMethods['delete'] = 'destroy'
-
-YamdbUserMeMethods = {
+YamdbUsernameMethods = {
     'get': 'list',
-    'patch': 'update'
+    'patch': 'update',
+    'delete': 'destroy',
 }
 
 urlpatterns = [

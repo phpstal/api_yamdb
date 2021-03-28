@@ -21,8 +21,9 @@ class YamdbUser(AbstractUser):
     )
     role = models.CharField(
         default=ROLES_CHOICES.USER,
-        max_length=10,
-        choices=ROLES_CHOICES.choices
+        max_length=100,
+        choices=ROLES_CHOICES.choices,
+        verbose_name='Роль пользователя'
     )
     user_permissions = None
     groups = None
@@ -32,17 +33,18 @@ class YamdbUser(AbstractUser):
 
     @property
     def is_admin(self):
-        return (
-            self.role == ROLES_CHOICES.ADMIN
-            or self.is_superuser
-            or self.is_staff
-        )
+        return any([
+            self.role == ROLES_CHOICES.ADMIN,
+            self.is_superuser,
+            self.is_staff,
+        ])
 
     @property
     def is_moderator(self):
         return self.role == ROLES_CHOICES.MODERATOR
 
     class Meta:
+        verbose_name = 'Пользователь'
         ordering = ['id']
 
 
@@ -62,6 +64,7 @@ class Genre(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Жанр'
         ordering = ['id']
 
 
@@ -81,6 +84,7 @@ class Category(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Категория'
         ordering = ['id']
 
 
@@ -90,11 +94,12 @@ class Title(models.Model):
         max_length=200,
         help_text='Напишите название произведения'
     )
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         verbose_name='Год создания',
         blank=True,
         null=True,
-        help_text='Укажите год создания'
+        help_text='Укажите год создания',
+        validators=[MinValueValidator(1900), MaxValueValidator(2021)]
     )
     category = models.ForeignKey(
         Category,
@@ -102,12 +107,13 @@ class Title(models.Model):
         related_name='titles',
         blank=True,
         null=True,
-        db_index=False,
+        verbose_name='категория',
     )
     genre = models.ManyToManyField(
         Genre,
         related_name='titles',
         blank=True,
+        verbose_name='жанр',
     )
     description = models.TextField(
         verbose_name='Описание произведения',
@@ -115,30 +121,41 @@ class Title(models.Model):
         help_text='Добавьте сюда описание произведения'
     )
 
+    class Meta:
+        verbose_name = 'Произведение'
+        ordering = ['id']
+
 
 class Review(models.Model):
     title = models.ForeignKey(
         Title,
+        verbose_name = 'Название отзыва',
         on_delete=models.CASCADE,
         related_name='reviews'
     )
-    text = models.TextField()
+    text = models.TextField(verbose_name = 'Текст отзыва')
     author = models.ForeignKey(
         YamdbUser,
+        verbose_name = 'Автор отзыва',
         on_delete=models.CASCADE,
         related_name='reviews'
     )
-    score = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    score = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        verbose_name = 'Оценка',
     )
     pub_date = models.DateTimeField(
-        'Дата публикации',
+        verbose_name ='Дата публикации',
         auto_now_add=True
     )
 
     class Meta:
+        verbose_name = 'Отзыв'
         ordering = ['-pub_date']
-        unique_together = ['title', 'author']
+        models.UniqueConstraint(
+            fields=['title', 'author'], 
+            name='unique_review'
+        )
 
     def __str__(self):
         return str(self.author)
@@ -147,21 +164,24 @@ class Review(models.Model):
 class Comment(models.Model):
     review = models.ForeignKey(
         Review,
+        verbose_name = 'Отзыв',
         on_delete=models.CASCADE,
         related_name='comments'
     )
-    text = models.TextField()
+    text = models.TextField(verbose_name = 'Текст комментария')
     author = models.ForeignKey(
         YamdbUser,
+        verbose_name = 'Автор комментария',
         on_delete=models.CASCADE,
         related_name='comments'
     )
     pub_date = models.DateTimeField(
-        'Дата публикации',
+        verbose_name = 'Дата публикации',
         auto_now_add=True
     )
 
     class Meta:
+        verbose_name = 'Комментарий'
         ordering = ['-pub_date']
 
     def __str__(self):

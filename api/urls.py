@@ -13,7 +13,6 @@ from .views import (YamdbUserViewSet,
 
 
 router = DefaultRouter()
-#router.register('users/me', YamdbUserMeViewSet)
 router.register('users', YamdbUserViewSet, basename='users')
 router.register('genres', GenreViewSet, basename='genres')
 router.register('categories', CategoryViewSet, basename='categories')
@@ -33,10 +32,5 @@ auth_urls = [
 
 urlpatterns = [
     path('v1/auth/', include(auth_urls)),
-#    path(
-#        'v1/users/me/',
-#        YamdbUserMeViewSet.as_view({'get': 'list','patch': 'update',}),
-#        name='my_user'
-#    ),
     path('v1/', include(router.urls)),
 ]

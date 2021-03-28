@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 from django_filters import rest_framework, CharFilter, FilterSet
 
 from .permissions import IsAdmin, IsAuthor, IsModerator, IsReadOnly
@@ -24,20 +25,13 @@ from .serializers import (YamdbUserSerializer,
 class YamdbUserViewSet(viewsets.ModelViewSet):
     queryset = YamdbUser.objects.all()
     serializer_class = YamdbUserSerializer
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsAdmin,)
     filterset_fields = ('email',)
+    lookup_field = 'username'
 
-
-class YamdbUserMeViewSet(YamdbUserViewSet):
-    permission_classes = (IsAuthenticated,)
-
-    def list(self, request, *args, **kwargs):
-        id = self.request.user.pk
-        obj = get_object_or_404(YamdbUser, id=id)
-        serializer = self.get_serializer(obj)
-        return Response(serializer.data)
-
-    def update(self, request):
+    @action(detail=False, methods=['GET', 'PATCH'],
+            permission_classes = (IsAuthenticated,))
+    def me(self, request):
         user = self.request.user
         serializer = self.get_serializer(
             user,
@@ -47,28 +41,6 @@ class YamdbUserMeViewSet(YamdbUserViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-
-
-class YamdbUsernameViewSet(YamdbUserViewSet):
-    permission_classes = (IsAdmin,)
-
-    def list(self, request, *args, **kwargs):
-        username = self.kwargs['username']
-        obj = get_object_or_404(YamdbUser, username=username)
-        serializer = self.get_serializer(obj)
-        return Response(serializer.data)
-
-    def update(self, request, username):
-        user = get_object_or_404(YamdbUser, username=username)
-        serializer = self.get_serializer(user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
-
-    def destroy(self, request, username):
-        user = get_object_or_404(YamdbUser, username=username)
-        self.perform_destroy(user)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class GenreViewSet(mixins.DestroyModelMixin,

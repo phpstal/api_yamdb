@@ -39,6 +39,11 @@ YamdbUserMeMethods = {
 YamdbUsernameMethods = YamdbUserMeMethods.copy()
 YamdbUsernameMethods['delete'] = 'destroy'
 
+YamdbUserMeMethods = {
+    'get': 'list',
+    'patch': 'update'
+}
+
 urlpatterns = [
     path('v1/auth/', include(auth_urls)),
     path(

@@ -1,5 +1,6 @@
 import hashlib
 from django.conf import settings
+from django.core.mail import send_mail
 from django.db.models import Avg
 from rest_framework import viewsets, filters, mixins, status
 from rest_framework.generics import get_object_or_404
@@ -150,11 +151,21 @@ class CommentViewSet(viewsets.ModelViewSet):
 class Registration(APIView):
     permission_classes = (AllowAny,)
 
-    def ConfirmationCodeGenerate(self, email):
+    def confirmation_code_generate(self, email):
         confirmation_code = hashlib.md5(
             f'{email}{settings.SECRET_KEY}'.encode('utf-8')
         ).hexdigest()
         return confirmation_code
+
+    def send_email(self, email, message, token=None):
+        if settings.EMAIL_HOST_USER:
+            send_mail(
+                'Регистрация в Yamdb',
+                message,
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False
+            )
 
 
 class GetConfirmationCode(Registration):
@@ -162,10 +173,12 @@ class GetConfirmationCode(Registration):
         serializer = ConfirmationCodeSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
+            confirmation_code = self.confirmation_code_generate(email)
+            message = f'Ваш код подтверждения {confirmation_code} для {email}'
+            self.send_email(email, message)
             serializer.save(is_active=False, username=email)
-            confirmation_code = self.ConfirmationCodeGenerate(email)
             return Response(
-                f'Код подтверждения {confirmation_code} для {email}',
+                'Код подтверждения отправлен на {email}',
                 status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -181,7 +194,7 @@ class GetToken(Registration):
     def post(self, request):
         email = request.data['email']
         confirmation_code = request.data['confirmation_code']
-        confirmation_code_check = self.ConfirmationCodeGenerate(email)
+        confirmation_code_check = self.confirmation_code_generate(email)
         if confirmation_code == confirmation_code_check:
             user = get_object_or_404(YamdbUser, email=email)
             token = self.get_tokens_for_user(user)

@@ -129,23 +129,23 @@ class Title(models.Model):
 class Review(models.Model):
     title = models.ForeignKey(
         Title,
-        verbose_name = 'Название отзыва',
+        verbose_name='Название отзыва',
         on_delete=models.CASCADE,
         related_name='reviews'
     )
-    text = models.TextField(verbose_name = 'Текст отзыва')
+    text = models.TextField(verbose_name='Текст отзыва')
     author = models.ForeignKey(
         YamdbUser,
-        verbose_name = 'Автор отзыва',
+        verbose_name='Автор отзыва',
         on_delete=models.CASCADE,
         related_name='reviews'
     )
     score = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)],
-        verbose_name = 'Оценка',
+        verbose_name='Оценка',
     )
     pub_date = models.DateTimeField(
-        verbose_name ='Дата публикации',
+        verbose_name='Дата публикации',
         auto_now_add=True
     )
 
@@ -153,7 +153,7 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         ordering = ['-pub_date']
         models.UniqueConstraint(
-            fields=['title', 'author'], 
+            fields=['title', 'author'],
             name='unique_review'
         )
 
@@ -164,19 +164,19 @@ class Review(models.Model):
 class Comment(models.Model):
     review = models.ForeignKey(
         Review,
-        verbose_name = 'Отзыв',
+        verbose_name='Отзыв',
         on_delete=models.CASCADE,
         related_name='comments'
     )
-    text = models.TextField(verbose_name = 'Текст комментария')
+    text = models.TextField(verbose_name='Текст комментария')
     author = models.ForeignKey(
         YamdbUser,
-        verbose_name = 'Автор комментария',
+        verbose_name='Автор комментария',
         on_delete=models.CASCADE,
         related_name='comments'
     )
     pub_date = models.DateTimeField(
-        verbose_name = 'Дата публикации',
+        verbose_name='Дата публикации',
         auto_now_add=True
     )
 

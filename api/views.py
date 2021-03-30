@@ -47,25 +47,20 @@ class MixinsViewSet(mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
                     mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
-    pass
+    filter_backends = [filters.SearchFilter]
+    permission_classes = (IsAdmin | IsReadOnly,)
+    search_fields = ('name', 'slug')
+    lookup_field = 'slug'
 
 
 class GenreViewSet(MixinsViewSet):
     queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    permission_classes = (IsAdmin | IsReadOnly,)
-    filter_backends = [filters.SearchFilter]
-    search_fields = ('name', 'slug')
-    lookup_field = 'slug'
+    serializer_class = GenreSerializer    
 
 
 class CategoryViewSet(MixinsViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    filter_backends = [filters.SearchFilter]
-    permission_classes = (IsAdmin | IsReadOnly,)
-    search_fields = ('name', 'slug')
-    lookup_field = 'slug'
 
 
 class TitleFilter(FilterSet):

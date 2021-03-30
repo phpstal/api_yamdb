@@ -33,7 +33,7 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
             permission_classes=(IsAuthenticated,))
     def me(self, request):
         user = request.user
-        if request.method == 'GET': 
+        if request.method == 'GET':
             return Response(self.get_serializer(user).data)
         serializer = self.get_serializer(
             user,
@@ -150,7 +150,7 @@ class GetConfirmationCode(Registration):
         return Response(
             f'Код подтверждения отправлен на {email}',
             status=status.HTTP_200_OK
-        )            
+        )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

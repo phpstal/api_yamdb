@@ -130,7 +130,7 @@ class Title(models.Model):
         ordering = ['id']
 
 
-class Review(models.Model):    
+class Review(models.Model):
     title = models.ForeignKey(
         Title,
         verbose_name='Название отзыва',
@@ -166,7 +166,7 @@ class Review(models.Model):
         return str(self.author)
 
 
-class Comment(models.Model):    
+class Comment(models.Model):
     review = models.ForeignKey(
         Review,
         verbose_name='Отзыв',

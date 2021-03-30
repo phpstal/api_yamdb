@@ -146,7 +146,7 @@ class GetConfirmationCode(Registration):
         self.send_email(email, message)
         serializer.save(is_active=False, username=email)
         return Response(
-            'Код подтверждения отправлен на {email}',
+            f'Код подтверждения отправлен на {email}',
             status=status.HTTP_200_OK
         )            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -1,9 +1,18 @@
 import os
 from datetime import timedelta
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+ENV_DICT = {
+    i: os.getenv(i)
+    for i in ['SECRET_KEY', 'EMAIL_HOST_USER', 'EMAIL_HOST_PASSWORD']
+}
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
+SECRET_KEY = ENV_DICT['SECRET_KEY']
 
 DEBUG = True
 
@@ -119,5 +128,5 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'yamdbmail@yandex.ru'
-EMAIL_HOST_PASSWORD = 'jr830cal49a'
+EMAIL_HOST_USER = ENV_DICT['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = ENV_DICT['EMAIL_HOST_PASSWORD']

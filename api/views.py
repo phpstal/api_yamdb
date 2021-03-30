@@ -32,9 +32,10 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET', 'PATCH'],
             permission_classes=(IsAuthenticated,))
     def me(self, request):
-        user = request.user
+        if request.method == 'GET': 
+            return Response(self.get_serializer(request.user).data)
         serializer = self.get_serializer(
-            user,
+            request.user,
             data=request.data,
             partial=True
         )
@@ -55,7 +56,7 @@ class MixinsViewSet(mixins.DestroyModelMixin,
 
 class GenreViewSet(MixinsViewSet):
     queryset = Genre.objects.all()
-    serializer_class = GenreSerializer    
+    serializer_class = GenreSerializer
 
 
 class CategoryViewSet(MixinsViewSet):

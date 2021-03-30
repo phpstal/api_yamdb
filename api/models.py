@@ -10,6 +10,7 @@ class ROLES_CHOICES(models.TextChoices):
 
 
 class YamdbUser(AbstractUser):
+    id = models.AutoField(primary_key=True, db_index=True)
     email = models.EmailField(verbose_name='E-Mail', unique=True)
     bio = models.TextField(verbose_name='О себе', blank=True)
     code = models.TextField(verbose_name='Код', blank=True)
@@ -44,11 +45,12 @@ class YamdbUser(AbstractUser):
         return self.role == ROLES_CHOICES.MODERATOR
 
     class Meta:
-        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
         ordering = ['id']
 
 
 class Genre(models.Model):
+    id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(
         verbose_name='Заголовок',
         max_length=200,
@@ -64,11 +66,12 @@ class Genre(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
         ordering = ['id']
 
 
 class Category(models.Model):
+    id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(
         verbose_name='Заголовок',
         max_length=200,
@@ -84,11 +87,12 @@ class Category(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
         ordering = ['id']
 
 
 class Title(models.Model):
+    id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(
         verbose_name='Заголовок',
         max_length=200,
@@ -122,7 +126,7 @@ class Title(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
         ordering = ['id']
 
 
@@ -142,15 +146,16 @@ class Review(models.Model):
     )
     score = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)],
-        verbose_name='Оценка',
+        verbose_name='Оценка'
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
-        auto_now_add=True
+        auto_now_add=True,
+        db_index=True
     )
 
     class Meta:
-        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
         ordering = ['-pub_date']
         models.UniqueConstraint(
             fields=['title', 'author'],
@@ -177,11 +182,12 @@ class Comment(models.Model):
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
-        auto_now_add=True
+        auto_now_add=True,
+        db_index=True
     )
 
     class Meta:
-        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
         ordering = ['-pub_date']
 
     def __str__(self):

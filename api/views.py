@@ -32,7 +32,7 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET', 'PATCH'],
             permission_classes=(IsAuthenticated,))
     def me(self, request):
-        user = self.request.user
+        user = request.user
         serializer = self.get_serializer(
             user,
             data=request.data,
@@ -43,10 +43,14 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class GenreViewSet(mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.CreateModelMixin,
-                   viewsets.GenericViewSet):
+class MixinsViewSet(mixins.DestroyModelMixin,
+                    mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    viewsets.GenericViewSet):
+    pass
+
+
+class GenreViewSet(MixinsViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdmin | IsReadOnly,)
@@ -55,10 +59,7 @@ class GenreViewSet(mixins.DestroyModelMixin,
     lookup_field = 'slug'
 
 
-class CategoryViewSet(mixins.ListModelMixin,
-                      mixins.DestroyModelMixin,
-                      mixins.CreateModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(MixinsViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
@@ -143,16 +144,16 @@ class Registration(APIView):
 class GetConfirmationCode(Registration):
     def post(self, request):
         serializer = ConfirmationCodeSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
-            confirmation_code = self.confirmation_code_generate(email)
-            message = f'Ваш код подтверждения {confirmation_code} для {email}'
-            self.send_email(email, message)
-            serializer.save(is_active=False, username=email)
-            return Response(
-                'Код подтверждения отправлен на {email}',
-                status=status.HTTP_200_OK
-            )
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        confirmation_code = self.confirmation_code_generate(email)
+        message = f'Ваш код подтверждения {confirmation_code} для {email}'
+        self.send_email(email, message)
+        serializer.save(is_active=False, username=email)
+        return Response(
+            'Код подтверждения отправлен на {email}',
+            status=status.HTTP_200_OK
+        )            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

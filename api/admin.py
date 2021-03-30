@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import YamdbUser, Comment, Review
+from .models import YamdbUser, Genre, Category, Title, Review, Comment
 
 
 class YamdbUserAdmin(admin.ModelAdmin):
@@ -30,15 +30,36 @@ class YamdbUserAdmin(admin.ModelAdmin):
 admin.site.register(YamdbUser, YamdbUserAdmin)
 
 
-class CommentsAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'text', 'author', 'pub_date', 'review')
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name', 'slug')
 
 
-admin.site.register(Comment, CommentsAdmin)
+admin.site.register(Genre, GenreAdmin)
 
 
-class ReviewsAdmin(admin.ModelAdmin):
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name', 'slug')
+
+
+admin.site.register(Category, CategoryAdmin)
+
+
+class TitleAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name', 'year', 'category', 'description')
+
+
+admin.site.register(Title, TitleAdmin)
+
+
+class ReviewAdmin(admin.ModelAdmin):
     list_display = ('pk', 'title', 'text', 'author', 'score', 'pub_date')
 
 
-admin.site.register(Review, ReviewsAdmin)
+admin.site.register(Review, ReviewAdmin)
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'review', 'text', 'author', 'pub_date')
+
+
+admin.site.register(Comment, CommentAdmin)

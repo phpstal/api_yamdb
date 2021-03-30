@@ -32,10 +32,11 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET', 'PATCH'],
             permission_classes=(IsAuthenticated,))
     def me(self, request):
+        user = request.user
         if request.method == 'GET': 
-            return Response(self.get_serializer(request.user).data)
+            return Response(self.get_serializer(user).data)
         serializer = self.get_serializer(
-            request.user,
+            user,
             data=request.data,
             partial=True
         )

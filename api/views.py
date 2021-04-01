@@ -41,7 +41,7 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
             partial=True
         )
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        serializer.save(role=request.user.role)
         return Response(serializer.data)
 
 
@@ -146,7 +146,7 @@ class GetConfirmationCode(Registration):
         confirmation_code = self.confirmation_code_generate(email)
         message = f'Ваш код подтверждения {confirmation_code} для {email}'
         self.send_email(email, message)
-        serializer.save(is_active=False, username=email)
+        serializer.save(username=email)
         return Response(
             f'Код подтверждения отправлен на {email}',
             status=status.HTTP_200_OK
@@ -157,7 +157,7 @@ class GetToken(Registration):
     def get_tokens_for_user(self, user):
         refresh = RefreshToken.for_user(user)
         return {
-            'access': str(refresh.access_token),
+            'token': str(refresh.access_token),
         }
 
     def post(self, request):
@@ -167,7 +167,6 @@ class GetToken(Registration):
         if confirmation_code == confirmation_code_check:
             user = get_object_or_404(YamdbUser, email=email)
             token = self.get_tokens_for_user(user)
-            user.is_active = True
             user.save()
             return Response(token, status=status.HTTP_200_OK)
         return Response(

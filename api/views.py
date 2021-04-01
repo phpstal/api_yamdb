@@ -33,7 +33,7 @@ class YamdbUserViewSet(viewsets.ModelViewSet):
             permission_classes=(IsAuthenticated,))
     def me(self, request):
         user = request.user
-        if request.method == 'GET':
+        if request.method == 'GET' and not request.user.is_admin:
             return Response(self.get_serializer(user).data)
         serializer = self.get_serializer(
             user,
@@ -157,7 +157,7 @@ class GetToken(Registration):
     def get_tokens_for_user(self, user):
         refresh = RefreshToken.for_user(user)
         return {
-            'access': str(refresh.access_token),
+            'token': str(refresh.access_token),
         }
 
     def post(self, request):
@@ -167,8 +167,6 @@ class GetToken(Registration):
         if confirmation_code == confirmation_code_check:
             user = get_object_or_404(YamdbUser, email=email)
             token = self.get_tokens_for_user(user)
-            user.is_active = True
-            user.save()
             return Response(token, status=status.HTTP_200_OK)
         return Response(
             'Ошибка в коде или email. Получите новый код подтверждения',

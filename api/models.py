@@ -24,7 +24,7 @@ class YamdbUser(AbstractUser):
         default=ROLES_CHOICES.USER,
         max_length=100,
         choices=ROLES_CHOICES.choices,
-        verbose_name='Роль пользователя'
+        verbose_name='Роль пользователя',
     )
     user_permissions = None
     groups = None
